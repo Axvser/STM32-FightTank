@@ -2,6 +2,7 @@
 #include "motor.h"
 #include "gun.h"
 #include "wifi.h"
+#include "mqtt.h"
 #include "debug.h"
 #include "delay.h"
 
@@ -99,81 +100,18 @@ void Test_GunRotate(GunContext *gun, double a_h, double a_v)
 void Test_Wifi(void)
 {
     Wifi_Init(115200);
-#define BUFFER_SIZE 256
-    char buffer[BUFFER_SIZE] = {'\0'}; // 初始化清零
-
-    // 1. Wi-Fi初始化
-    WIFI_CMD_Reset(buffer);
-    Wifi_Send(buffer);
-    printf("[Real Value]\n%s\n", buffer); // 添加换行
-    printf("[Target Value]\nAT+RST\r\n\n");
-    memset(buffer, 0, BUFFER_SIZE); // 发送后清空
-    delay_ms(1000);
-
-    WIFI_CMD_SetMode(buffer, WIFI_MODE_STA);
-    Wifi_Send(buffer);
-    printf("[Real Value]\n%s\n", buffer);
-    printf("[Target Value]\nAT+CWMODE=1\r\n\n");
-    memset(buffer, 0, BUFFER_SIZE);
-    delay_ms(400);
-
-    WIFI_CMD_SetDHCP(buffer, WIFI_DHCP_EN, WIFI_MODE_STA);
-    Wifi_Send(buffer);
-    printf("[Real Value]\n%s\n", buffer);
-    printf("[Target Value]\nAT+CWDHCP=1,1\r\n\n");
-    memset(buffer, 0, BUFFER_SIZE);
-    delay_ms(200);
-
-    WIFI_CMD_ConnectAP(buffer, WIFI_SSID, WIFI_PSWD);
-    Wifi_Send(buffer);
-    printf("[Real Value]\n%s\n", buffer);
-    printf("[Target Value]\nAT+CWJAP=\"Axvser\",\"888888881\"\r\n\n");
-    memset(buffer, 0, BUFFER_SIZE);
-    delay_ms(5000);
-
-    // 2. MQTT连接
-    MQTT_CMD_UserCfg(buffer, MQTT_LINK_ID, MQTT_DEV_NAME, MQTT_DEV_ID, MQTT_TOKEN);
-    Wifi_Send(buffer);
-    printf("[Real Value]\n%s\n", buffer);
-    printf("[Target Value]\nAT+MQTTUSERCFG=0,1,\"WIFI\",\"q413Mr879l\",\"version=2018-10-31&res=products%%2Fq413Mr879l%%2Fdevices%%2FWIFI&et=1789801319&method=md5&sign=oCJic495I%%2Bl7ZACTpS7eSA%%3D%%3D\",0,0,\"\"\r\n\n");
-    memset(buffer, 0, BUFFER_SIZE);
+    ESP01S_AT_RESET();
     delay_ms(500);
-
-    MQTT_CMD_Connect(buffer, MQTT_LINK_ID, MQTT_HOST, MQTT_PORT, 1);
-    Wifi_Send(buffer);
-    printf("[Real Value]\n%s\n", buffer);
-    printf("[Target Value]\nAT+MQTTCONN=0,\"mqtts.heclouds.com\",1883,1\r\n\n");
-    memset(buffer, 0, BUFFER_SIZE);
+    ESP01S_AT_MODE(1);
+    delay_ms(500);
+    ESP01S_AT_DHCP(1, 1);
+    delay_ms(500);
+    ESP01S_AT_JAP("Axvser","888888881");
+    delay_ms(2000);
+    ESP01S_AT_CFG(MQTT_DEV_NAME, MQTT_DEV_ID, MQTT_TOKEN);
+    delay_ms(500);
+    ESP01S_AT_CONN(MQTT_LINK_ID, MQTT_HOST, MQTT_PORT);
     delay_ms(1000);
-
-    // 3. 订阅主题
-    char topic_get[128] = {0}, topic_set[128] = {0},topic_portreply={0};
-    MQTT_TOPIC_GET(topic_get, MQTT_DEV_ID, MQTT_DEV_NAME);
-    MQTT_TOPIC_SET(topic_set, MQTT_DEV_ID, MQTT_DEV_NAME);
-    MQTT_TOPIC_PostReply(topic_portreply,MQTT_DEV_ID, MQTT_DEV_NAME);
-
-    MQTT_CMD_Subscribe(buffer, MQTT_LINK_ID, topic_get, 0);
-    Wifi_Send(buffer);
-    printf("[Real Value]\n%s\n", buffer);
-    printf("[Target Value]\nAT+MQTTSUB=0,\"$sys/q413Mr879l/WIFI/thing/property/get\",0\r\n\n");
-    memset(buffer, 0, BUFFER_SIZE);
-    delay_ms(200);
-
-    MQTT_CMD_Subscribe(buffer, MQTT_LINK_ID, topic_set, 0);
-    Wifi_Send(buffer);
-    printf("[Real Value]\n%s\n", buffer);
-    printf("[Target Value]\nAT+MQTTSUB=0,\"$sys/q413Mr879l/WIFI/thing/property/set\",0\r\n\n");
-    memset(buffer, 0, BUFFER_SIZE);
-    delay_ms(200);
-
-    MQTT_CMD_Subscribe(buffer,MQTT_LINK_ID,topic_portreply,0);
-
-    // 发布战车状态
-    MQTT_CMD_Post_TankStatus(0, "q413Mr879l", "WIFI", "123", "0.7", "0.1", "90.0", "45.0", "1");
-
-    // 响应属性获取请求
-    MQTT_CMD_GetReply_TankStatus(0, "q413Mr879l", "WIFI", "456", "0.7", "0.1", "90.0", "45.0", "1");
-
-    // 响应属性设置请求
-    MQTT_CMD_SetReply_TankStatus(0, "q413Mr879l", "WIFI", "789");
+    ESP01S_AT_POST(MQTT_LINK_ID,MQTT_DEV_ID,MQTT_DEV_NAME,0.2,0.2,4,3,0.8);
+    delay_ms(300);
 }
