@@ -1,8 +1,7 @@
 #include "motor.h"
 
-TankEngine Engine_Init(uint16_t arr, uint16_t psc)
+MotorContext Motor_Init(uint16_t arr, uint16_t psc)
 {
-	TankEngine enginContext = {arr,0,0,TANK_STOP};
 	GPIO_InitTypeDef GPIO_InitStructure;
 	TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
 	TIM_OCInitTypeDef TIM_OCInitStructure;
@@ -58,34 +57,48 @@ TankEngine Engine_Init(uint16_t arr, uint16_t psc)
 	// 使能TIM1
 	TIM_Cmd(TIM1, ENABLE);
 
-	return enginContext;
+	return (MotorContext){arr,0,0};
 }
 
-/// @brief 更新电机状态
-/// @param engine 电机上下文
-void Engine_Update(TankEngine *context)
+void Motor_Update(MotorContext *context)
 {
-	TIM_SetCompare1(TIM1,(uint32_t)(context->vx*context->arr));
-	TIM_SetCompare2(TIM1,(uint32_t)(context->vy*context->arr));
-	if(context->state == TANK_FORE)
+	// 左侧履带
+	if(context->vl>0)
 	{
 		AN1 = 1;
 		AN2 = 0;
-		BN1 = 1;
-		BN2 = 0;
+		TIM_SetCompare1(TIM1,(uint32_t)(context->vl*context->arr));
 	}
-	else if(context->state == TANK_BACK)
+	else if(context->vl<0)
 	{
 		AN1 = 0;
 		AN2 = 1;
-		BN1 = 0;
-		BN2 = 1;
+		TIM_SetCompare1(TIM1,(uint32_t)(-context->vl*context->arr));
 	}
 	else
 	{
 		AN1 = 0;
 		AN2 = 0;
-		BN1 = 0;
+		TIM_SetCompare1(TIM1,0);
+	}
+
+    // 右侧履带
+	if(context->vr>0)
+	{
+		BN1 = 1;
 		BN2 = 0;
+		TIM_SetCompare2(TIM1,(uint32_t)(context->vr*context->arr));
+	}
+	else if(context->vr<0)
+	{
+		BN1 = 0;
+		BN2 = 1;
+		TIM_SetCompare2(TIM1,(uint32_t)(-context->vr*context->arr));
+	}
+	else
+	{
+        BN1 = 0;
+		BN2 = 0;
+		TIM_SetCompare2(TIM1,0);
 	}
 }

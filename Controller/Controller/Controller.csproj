@@ -20,5 +20,7 @@
             <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
         </PackageReference>
         <PackageReference Include="CommunityToolkit.Mvvm"/>
+        <PackageReference Include="MQTTnet" />
+        <PackageReference Include="VeloxDev.Avalonia" />
     </ItemGroup>
 </Project>
