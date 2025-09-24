@@ -21,6 +21,12 @@
         </PackageReference>
         <PackageReference Include="CommunityToolkit.Mvvm"/>
         <PackageReference Include="MQTTnet" />
+        <PackageReference Include="Newtonsoft.Json" />
         <PackageReference Include="VeloxDev.Avalonia" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Services\OneNet\" />
+      <Folder Include="Services\TCP\" />
     </ItemGroup>
 </Project>

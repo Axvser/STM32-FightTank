@@ -37,11 +37,22 @@ int main(void)
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+void Test_Wifi(void)
+{
+    Wifi_Init_AP(115200,"STM32-Tank","88888888","192.168.5.1","8080","255.255.255.0");
+    MotorContext motor = Motor_Init(1679, 0);
+    GunContext gun = Gun_Init(999, 0);
+    while (1)
+    {
+        Wifi_FrameUpdate(&motor,&gun);
+    }
+}
+
 void Test_Tank(void)
 {
     MotorContext motor = Motor_Init(1679, 0);
     GunContext gun = Gun_Init(999, 0);
-    Test_GunFire(&gun, 0.25);
+    Test_GunFire(&gun, 1);
     double speed = 0;
     int reverse = 0;
     Test_DirectMove(&motor, speed);
@@ -97,7 +108,7 @@ void Test_GunRotate(GunContext *gun, double a_h, double a_v)
     Gun_Update(gun);
 }
 
-void Test_Wifi(void)
+void Test_MQTT(void)
 {
     Wifi_Init(115200);
     ESP01S_AT_RESET();
@@ -106,12 +117,12 @@ void Test_Wifi(void)
     delay_ms(500);
     ESP01S_AT_DHCP(1, 1);
     delay_ms(500);
-    ESP01S_AT_JAP("Axvser","888888881");
+    ESP01S_AT_JAP("Axvser", "888888881");
     delay_ms(2000);
     ESP01S_AT_CFG(MQTT_DEV_NAME, MQTT_DEV_ID, MQTT_TOKEN);
     delay_ms(500);
     ESP01S_AT_CONN(MQTT_LINK_ID, MQTT_HOST, MQTT_PORT);
     delay_ms(1000);
-    ESP01S_AT_POST(MQTT_LINK_ID,MQTT_DEV_ID,MQTT_DEV_NAME,0.2,0.2,4,3,0.8);
+    ESP01S_AT_POST(MQTT_LINK_ID, MQTT_DEV_ID, MQTT_DEV_NAME, 0.2, 0.2, 4, 3, 0.8);
     delay_ms(300);
 }

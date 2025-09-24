@@ -12,9 +12,10 @@
 #define MQTT_HOST "mqtts.heclouds.com"
 #define MQTT_PORT 1883
 #define MQTT_LINK_ID 0
+#define MQTT_USR_ID 465217
 #define MQTT_DEV_ID "q413Mr879l"
-#define MQTT_DEV_NAME "WIFI"
-#define MQTT_TOKEN "version=2018-10-31&res=products%2Fq413Mr879l%2Fdevices%2FWIFI&et=1789801319&method=md5&sign=oCJic495I%2Bl7ZACTpS7eSA%3D%3D"
+#define MQTT_DEV_NAME "TankController"
+#define MQTT_TOKEN "version=2018-10-31&res=products%2Fq413Mr879l%2Fdevices%2FTankController&et=2051193600&method=sha1&sign=Fv0mpyDSpRpUCSXLrJAuM1gJf%2BI%3D"
 
 #define MQTT_TOPIC_POST "property/post/reply"
 #define MQTT_TOPIC_GET "property/get"

@@ -3,11 +3,11 @@
 #ifndef __GUN_H_
 #define __GUN_H_
 
-/// @brief æ”»å‡»æ¨¡å—ä¸Šä¸‹æ–‡
-/// @param arr TIMè‡ªåŠ¨é‡è£…å€¼
-/// @param ah æ°´å¹³æ¬§æ‹‰è½¬è§’[0.360]
-/// @param av å‚ç›´æ¬§æ‹‰è½¬è§’[45,135]
-/// @param fire ç«åŠ›å¤§å°[0,1]
+/// @brief ¹¥»÷Ä£¿éÉÏÏÂÎÄ
+/// @param arr TIM×Ô¶¯ÖØ×°Öµ
+/// @param ah Ë®Æ½Å·À­×ª½Ç[0.360]
+/// @param av ´¹Ö±Å·À­×ª½Ç[45,135]
+/// @param fire »ğÁ¦´óĞ¡[0,1]
 typedef struct
 {
     uint16_t arr;
@@ -16,14 +16,14 @@ typedef struct
     double fire;
 } GunContext;
 
-/// @brief æ”»å‡»æ¨¡å—åˆå§‹åŒ–
-/// @param arr è‡ªåŠ¨é‡è£…å€¼
-/// @param psc æ—¶é’Ÿé¢„åˆ†é¢‘æ•°
-/// @return æ”»å‡»æ¨¡å—ä¸Šä¸‹æ–‡
+/// @brief ¹¥»÷Ä£¿é³õÊ¼»¯
+/// @param arr ×Ô¶¯ÖØ×°Öµ
+/// @param psc Ê±ÖÓÔ¤·ÖÆµÊı
+/// @return ¹¥»÷Ä£¿éÉÏÏÂÎÄ
 GunContext Gun_Init(uint16_t arr, uint16_t psc);
 
-/// @brief æ›´æ–°æ”»å‡»æ¨¡å—çŠ¶æ€
-/// @param context æ”»å‡»æ¨¡å—ä¸Šä¸‹æ–‡
+/// @brief ¸üĞÂ¹¥»÷Ä£¿é×´Ì¬
+/// @param context ¹¥»÷Ä£¿éÉÏÏÂÎÄ
 void Gun_Update(GunContext *context);
 
 #endif

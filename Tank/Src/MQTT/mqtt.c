@@ -94,7 +94,7 @@ void ESP01S_AT_PUBGET(uint8_t linkID, uint8_t replyID, const char *productID, co
                       double firePower)
 {
     char buffer[512];
-    sprintf(buffer, "AT+MQTTPUB=%d,\"$sys//%s/%s/thing/property/get_reply\",\"{\"id\":\"%d\"\\,\"title\":\"OK\"\\,\"code\":200\\,\"msg\":\"success\"\\,\"data\":{\"LeftTrack\":%.2lf\\,\"RightTrack\":%.2lf\\,\"TurretH\":%.2lf\\,\"TurretV\":%.2lf\\,\"FirePower\":%.2lf}}\",1,0\r\n",
+    sprintf(buffer, "AT+MQTTPUB=%d,\"$sys//%s/%s/thing/property/get_reply\",\"{\\\"id\\\":\\\"%d\\\"\\,\\\"title\\\":\\\"OK\\\"\\,\\\"code\\\":200\\,\\\"msg\\\":\\\"success\\\"\\,\\\"data\\\":{\\\"LeftTrack\\\":%.2lf\\,\\\"RightTrack\\\":%.2lf\\,\\\"TurretH\\\":%.2lf\\,\\\"TurretV\\\":%.2lf\\,\\\"FirePower\\\":%.2lf}}\",1,0\r\n",
             linkID, productID, deviceName, replyID,
             leftTrack,
             rightTrack,
@@ -110,9 +110,11 @@ void ESP01S_AT_PUBGET(uint8_t linkID, uint8_t replyID, const char *productID, co
 void ESP01S_AT_PUBSET(uint8_t linkID, uint8_t replyID, const char *productID, const char *deviceName)
 {
     char buffer[256];
-    sprintf(buffer, "AT+MQTTPUB=%d,\"$sys/%s/%s/thing/property/set_reply\",\"{\"id\":\"%d\"\\,\"code\":200\\,\"msg\":\"success\"}\",1,0\r\n", linkID, productID, deviceName, replyID);
+    sprintf(buffer, "AT+MQTTPUB=%d,\"$sys/%s/%s/thing/property/set_reply\",\"{\\\"id\\\":\\\"%d\\\"\\,\\\"code\\\":200\\,\\\"msg\\\":\\\"success\\\"}\",1,0\r\n", linkID, productID, deviceName, replyID);
     Wifi_Send(buffer);
 #if MQTT_DEBUG
     printf(buffer);
 #endif
 }
+
+
