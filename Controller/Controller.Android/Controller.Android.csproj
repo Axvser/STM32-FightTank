@@ -9,6 +9,8 @@
         <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
         <AndroidPackageFormat>apk</AndroidPackageFormat>
         <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
+        <AndroidSdkDirectory>E:\VisualStudio\Shared\Android\android-sdk</AndroidSdkDirectory>
+        <JavaSdkDirectory>E:\VisualStudio\Shared\Android\openjdk\jdk-17.0.14</JavaSdkDirectory>
     </PropertyGroup>
 
     <ItemGroup>

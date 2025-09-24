@@ -1,8 +1,8 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using VeloxDev.Core.MVVM;
 
 namespace Controller.ViewModels;
 
-public partial class MainViewModel : ViewModelBase
+public partial class MainViewModel
 {
-    [ObservableProperty] private string _greeting = "Welcome to Avalonia!";
+    [VeloxProperty] private TankViewModel _tank = new();
 }
