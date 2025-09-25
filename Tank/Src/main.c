@@ -3,25 +3,28 @@
 #include "gun.h"
 #include "wifi.h"
 #include "mqtt.h"
+#include "ov2640.h"
+#include "dcmi.h"
+#include "malloc.h"
 #include "debug.h"
 #include "delay.h"
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// ×ÛºÏ²âÊÔ×é
-void Test_Tank(void);
-
-// µç»ú²âÊÔ×é [ ? Í¨¹ı²âÊÔ ]
+// µç»ú²âÊÔ×é [ Í¨¹ı ]
 void Test_DirectMove(MotorContext *motor, double v);
 void Test_TurnMove(MotorContext *motor, double v_l, double v_r);
 void Test_StopMove(MotorContext *motor);
 
-// ¹¥»÷²âÊÔ×é [ ? ¶æ»úÎ´²âÊÔ ? Ë®µ¯Ç¹PWMĞÅºÅ¿ØÖÆÎŞĞ§ ]
+// ¹¥»÷²âÊÔ×é [ Î´²âÊÔ ]
 void Test_GunFire(GunContext *gun, double fire);
 void Test_GunRotate(GunContext *gun, double a_h, double a_v);
 
-// Wifi²âÊÔ×é [ ? OneNetÁ¬½Ó²âÊÔ ? Êı¾İ²Ù×÷ ]
+// Wifi²âÊÔ×é [ Í¨¹ı ]
 void Test_Wifi(void);
+
+// OV2640²âÊÔ×é [ Î´²âÊÔ ]
+void Test_OV2640(void);
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -29,7 +32,7 @@ int main(void)
 {
     Debug_Init(115200);
 
-    Test_Wifi();
+    Test_OV2640();
 
     while (1)
         ;
@@ -37,40 +40,19 @@ int main(void)
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void Test_Wifi(void)
+void Test_OV2640(void)
 {
-    Wifi_Init_AP(115200,"STM32-Tank","88888888","192.168.5.1","8080","255.255.255.0");
-    MotorContext motor = Motor_Init(1679, 0);
-    GunContext gun = Gun_Init(999, 0);
-    while (1)
-    {
-        Wifi_FrameUpdate(&motor,&gun);
-    }
+
 }
 
-void Test_Tank(void)
+void Test_Wifi(void)
 {
+    Wifi_Init_AP(115200, "STM32-Tank", "88888888", "192.168.5.1", "8080", "255.255.255.0");
     MotorContext motor = Motor_Init(1679, 0);
     GunContext gun = Gun_Init(999, 0);
-    Test_GunFire(&gun, 1);
-    double speed = 0;
-    int reverse = 0;
-    Test_DirectMove(&motor, speed);
     while (1)
     {
-        speed += reverse ? -0.001 : 0.001;
-        if (speed > 1)
-        {
-            speed = 1;
-            reverse = 1;
-        }
-        if (speed < 0)
-        {
-            speed = 0;
-            reverse = 0;
-        }
-        Test_DirectMove(&motor, speed);
-        delay_ms(17);
+        Wifi_FrameUpdate(&motor, &gun);
     }
 }
 

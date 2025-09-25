@@ -8,7 +8,7 @@ using VeloxDev.Core.MVVM;
 
 namespace Controller.ViewModels;
 
-[MonoBehaviour(45)]
+[MonoBehaviour(120)]
 public partial class TankViewModel
 {
     /// <summary>

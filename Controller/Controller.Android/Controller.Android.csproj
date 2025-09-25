@@ -11,6 +11,7 @@
         <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
         <AndroidSdkDirectory>E:\VisualStudio\Shared\Android\android-sdk</AndroidSdkDirectory>
         <JavaSdkDirectory>E:\VisualStudio\Shared\Android\openjdk\jdk-17.0.14</JavaSdkDirectory>
+        <RunAOTCompilation>false</RunAOTCompilation>
     </PropertyGroup>
 
     <ItemGroup>
