@@ -5,29 +5,30 @@
 #include "stm32f4xx_gpio.h"
 #include "bitband.h"
 
-//////////////////	 
+//////////////////
 // OV2640 引脚接线
 //////////////////
 // SCL - PA1  √
 // SDA - PA3  √
-// D0 - PA5
-// D2 - PA7
-// D4 - PC5
-// D6 - PB1
-// DCLK - PE8
-// PWDN - PE10
-// VSYNC - PA0
+// D0 - PC6
+// D2 - PC8
+// D4 - PC11
+// D6 - PB8
+// DCLK - PA6
+// PWDN - PA0
+// VSYNC - PB7
 // HREF - PA2
-// RST - PA4
-// D1 - PA6
-// D3 - PC4
-// D5 - PB0
-// D7 - PE7
+// RST - PA5
+// D1 - PC7
+// D3 - PC9
+// D5 - PB6
+// D7 - PB9
+// HSYNC - PA4
 //////////////////
 
 //IO方向设置
 #define SCCB_SDA_IN()  {GPIOD->MODER&=~(0<<(1*2));GPIOD->MODER|=0<<1*2;}	//PA1 输入
-#define SCCB_SDA_OUT() {GPIOD->MODER&=~(0<<(1*2));GPIOD->MODER|=1<<1*2;} 	//PA1 输出
+#define SCCB_SDA_OUT() {GPIOD->MODER&=~(0<<(3*2));GPIOD->MODER|=1<<3*2;} 	//PA3 输出
 
 //IO操作函数	 
 #define SCCB_SCL    		PAout(1)	 	//SCL

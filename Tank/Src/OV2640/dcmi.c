@@ -3,6 +3,10 @@
 
 uint8_t ov_frame = 0;				 // 帧率
 
+volatile uint8_t jpeg_data_ready = 0;
+volatile uint32_t jpeg_data_size = 0;
+uint8_t* current_jpeg_buf = 0;
+
 DCMI_InitTypeDef DCMI_InitStructure;
 
 // DCMI中断服务函数
@@ -19,11 +23,46 @@ void DCMI_IRQHandler(void)
 // DMA2_Stream1中断服务函数 (双缓冲模式)
 void DMA2_Stream1_IRQHandler(void)
 {
-	if (DMA_GetFlagStatus(DMA2_Stream1, DMA_FLAG_TCIF1) == SET) // DMA2_Steam1,传输完成标志
-	{
-		DMA_ClearFlag(DMA2_Stream1, DMA_FLAG_TCIF1); // 清除传输完成中断
-		// 执行摄像头接收回调函数,读取数据等操作在这里面处理
-	}
+    if (DMA_GetFlagStatus(DMA2_Stream1, DMA_FLAG_TCIF1) == SET) // DMA2_Steam1,???
+    {
+        DMA_ClearFlag(DMA2_Stream1, DMA_FLAG_TCIF1); // ж
+        
+        // 获取当前缓冲区地址
+        if (DMA_GetCurrentMemoryTarget(DMA2_Stream1) == DMA_Memory_0)
+            current_jpeg_buf = (uint8_t*)DMA2_Stream1->M0AR;
+        else
+            current_jpeg_buf = (uint8_t*)DMA2_Stream1->M1AR;
+        
+        // 查找JPEG结束标记 (0xFFD9)
+        jpeg_data_size = 0;
+        for (uint32_t i = 0; i < JPEG_BUF_SIZE - 1; i++)
+        {
+            if (current_jpeg_buf[i] == 0xFF && current_jpeg_buf[i+1] == 0xD9)
+            {
+                jpeg_data_size = i + 2;
+                break;
+            }
+        }
+        
+        jpeg_data_ready = 1;
+    }
+}
+
+uint8_t* DCMI_Get_JPEG_Data(uint32_t* size)
+{
+    if (jpeg_data_ready && jpeg_data_size > 0)
+    {
+        *size = jpeg_data_size;
+        return current_jpeg_buf;
+    }
+    *size = 0;
+    return 0;
+}
+
+void DCMI_Reset_JPEG_Flag(void)
+{
+    jpeg_data_ready = 0;
+    jpeg_data_size = 0;
 }
 
 // DCMI DMA配置
@@ -91,14 +130,11 @@ void My_DCMI_Init(void)
 	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;		   // 上拉
 	GPIO_Init(GPIOA, &GPIO_InitStructure);				   // 初始化
 
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7 | GPIO_Pin_6; // PA4/6   //PB6/7   复用功能输出
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7 | GPIO_Pin_6 | GPIO_Pin_8 | GPIO_Pin_9; // PA4/6   //PB6/7   复用功能输出
 	GPIO_Init(GPIOB, &GPIO_InitStructure);				   // 初始化
 
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6 | GPIO_Pin_7 | GPIO_Pin_8 | GPIO_Pin_9 | GPIO_Pin_11; // PC6/7/8/9/11 复用功能输出
-	GPIO_Init(GPIOC, &GPIO_InitStructure);														   // 初始化
-
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5 | GPIO_Pin_6; // PE5/6  复用功能输出
-	GPIO_Init(GPIOE, &GPIO_InitStructure);				   // 初始化
+	GPIO_Init(GPIOC, &GPIO_InitStructure);
 
 	GPIO_PinAFConfig(GPIOA, GPIO_PinSource4, GPIO_AF_DCMI);	 // PA4,AF13  DCMI_HSYNC
 	GPIO_PinAFConfig(GPIOA, GPIO_PinSource6, GPIO_AF_DCMI);	 // PA6,AF13  DCMI_PCLK
@@ -109,8 +145,8 @@ void My_DCMI_Init(void)
 	GPIO_PinAFConfig(GPIOC, GPIO_PinSource9, GPIO_AF_DCMI);	 // PC9,AF13  DCMI_D3
 	GPIO_PinAFConfig(GPIOC, GPIO_PinSource11, GPIO_AF_DCMI); // PC11,AF13 DCMI_D4
 	GPIO_PinAFConfig(GPIOB, GPIO_PinSource6, GPIO_AF_DCMI);	 // PB6,AF13  DCMI_D5
-	GPIO_PinAFConfig(GPIOE, GPIO_PinSource5, GPIO_AF_DCMI);	 // PE5,AF13  DCMI_D6
-	GPIO_PinAFConfig(GPIOE, GPIO_PinSource6, GPIO_AF_DCMI);	 // PE6,AF13  DCMI_D7
+	GPIO_PinAFConfig(GPIOB, GPIO_PinSource5, GPIO_AF_DCMI);	 // PB8,AF13  DCMI_D6
+	GPIO_PinAFConfig(GPIOB, GPIO_PinSource6, GPIO_AF_DCMI);	 // PB9,AF13  DCMI_D7
 
 	DCMI_DeInit(); // 清除原来的设置
 
